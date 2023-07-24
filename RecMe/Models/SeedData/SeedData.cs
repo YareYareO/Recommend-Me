@@ -17,6 +17,7 @@ public static class SeedData
             {
                 throw new ArgumentNullException("Null ViewContext");
             }
+            int count = 0;
 
             // Look for any Things.
             if (context.Thing.Any())
@@ -49,6 +50,7 @@ public static class SeedData
                         Description = "ein Klassiker"
                     }
                 );
+                count++;
             }
 
             //Look for any Tags
@@ -79,13 +81,13 @@ public static class SeedData
                         Name = "Album"
                     }
                 );
+                count++;
             }
 
             //Looking for any ThingHasTags
             if (context.ThingHasTag.Any())
             {
                 Debug.WriteLine("ThingHasTag not empty");
-                return;
             }
             else
             {
@@ -114,9 +116,9 @@ public static class SeedData
                         TagId = 4
                     }
                 );
+                count++;
             }
-
-            context.SaveChanges();
+            if(count > 0) context.SaveChanges();
         }
     }
 }
