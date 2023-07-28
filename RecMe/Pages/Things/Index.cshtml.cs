@@ -16,26 +16,27 @@ namespace RecMe.Pages.Things
 {
     public class IndexModel : PageModel
     {
-        //private readonly RecMe.Data.RecMeContext _context;
         private readonly ThingQuerier querier;
+        public IList<Thing> Thing { get; set; } = default!;
+        public IList<Tag> Tag { get; set; } = default!;
+        [BindProperty]
+        public List<string>? ChosenTags { get; set; } //used to bind to ui checkboxes
+
+        private static string[]? ChosenTagsArray; //used to preserve chosen tags
+        
 
         public IndexModel(RecMe.Data.RecMeContext context)
         {
-            //_context = context;
             querier = new ThingQuerier(context);
         }
-
-        public IList<Thing> Thing { get;set; } = default!;
-
         public async Task OnGetAsync()
-        {
-            
+        {   
+            var tags = querier.GetAllTags();
+            Tag = tags.ToList();
 
-            if (!string.IsNullOrEmpty(SearchString))
+            if (ChosenTagsArray != null && ChosenTagsArray.Length > 0)
             {
-                var things = querier.GetThingsByTag(SearchString);
-                //string[] list = { "Album", "eminem", "hip hop album"};
-                //var things = querier.GetThingsByTags(list);
+                var things = querier.GetThingsByTags(ChosenTagsArray);
                 Thing = await things.ToListAsync();
             }
             else
@@ -43,12 +44,19 @@ namespace RecMe.Pages.Things
                 var things = querier.GetAllThings();
                 Thing = await things.ToListAsync();
             }
-             
-           
-            
         }
+        public async Task<IActionResult> OnPostAsync()
+        {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
 
-        [BindProperty(SupportsGet = true)]
-        public string? SearchString { get; set; }
+            if (ChosenTags != null)
+            {
+                ChosenTagsArray = ChosenTags.ToArray();
+            }
+            return RedirectToPage("./Index");
+        }
     }
 }

@@ -16,6 +16,12 @@ namespace RecMe.Controllers.SearchThings
                          select thing;
             return things;
         }
+        public IQueryable<Tag> GetAllTags()
+        {
+            var tags = from tag in _context.Tag
+                       select tag;
+            return tags;
+        }
         public IQueryable<Thing> GetThingsByTag(string searchString)
         {   //finds things that have a tag that contains ONE searchstring
             var things = (from thing in GetAllThings()
