@@ -23,7 +23,6 @@ namespace RecMe.Pages.Things
         public List<string>? ChosenTags { get; set; } //used to bind to ui checkboxes
 
         private static string[]? ChosenTagsArray; //used to preserve chosen tags
-        
 
         public IndexModel(RecMe.Data.RecMeContext context)
         {

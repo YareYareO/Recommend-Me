@@ -1,4 +1,5 @@
 ﻿@page
+@using Microsoft.AspNetCore.Html;
 @model RecMe.Pages.Things.IndexModel
 
 @{
@@ -7,16 +8,49 @@
 
 <h1>Search for Things!</h1>
 
+@{
+    IHtmlContent CreateButtons(Models.Tag rootTag)
+    {
+        List<Models.Tag> children = new List<Models.Tag>();
+        string returnstring = CreateComponent(rootTag);
+
+        foreach (var tag in Model.Tag)
+        {
+            if(tag.ParentId == rootTag.Id)
+            {
+                children.Add(tag);
+            }
+        }
+
+        if(children.Count > 0)
+        {
+            foreach (var child in children)
+            {
+                returnstring += CreateButtons(child);
+            }
+        }
+
+        return Html.Raw($@"
+        <div> {returnstring} </div>");
+    }
+
+    string CreateComponent(Models.Tag tag) //why does """ xyz """ rawstring not work ahhhhhhh
+    {
+        return $@" {tag.Name} <input name='ChosenTags' type='checkbox' value='{tag.Name}'/> <br />";
+    } 
+}
+
 <form method="post">
     @foreach (var tag in Model.Tag)
     {
-        @Html.DisplayFor(modelItem => tag.Name)
-        <input name="ChosenTags" type="checkbox" value="@tag.Name"/>
-        <br/>
+        if(tag.ParentId == null)
+        {
+            @CreateButtons(tag)
+        }
+        
     }
-    <input type="submit" value="Start Searching"/>
+    <input type="submit" value="Start Searching" />
 </form>
-
 
 <table class="table">
     <thead>
