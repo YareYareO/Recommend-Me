@@ -9,35 +9,48 @@
 <h1>Search for Things!</h1>
 
 @{
-    IHtmlContent CreateButtons(Models.Tag rootTag)
+    IHtmlContent CreateComponents(Models.Tag rootTag)
     {
-        List<Models.Tag> children = new List<Models.Tag>();
-        string returnstring = CreateComponent(rootTag);
+        List<Models.Tag> childrenOfRoot = new List<Models.Tag>();
+        string idattribute = "taggroup" + rootTag.Id.ToString();
+        string rootelement = CreateComponent(rootTag);
+        string children = "";
 
-        foreach (var tag in Model.Tag)
+        foreach (var tag in Model.Tag) // might want to make a copy of model.tag and make it smaller in the next foreach loop so that it doesnt iterate through the whole thing over and over.
         {
             if(tag.ParentId == rootTag.Id)
             {
-                children.Add(tag);
+                childrenOfRoot.Add(tag);
             }
         }
+        string toggleButton = "";
 
-        if(children.Count > 0)
+        if (childrenOfRoot.Count > 0)
         {
-            foreach (var child in children)
+            toggleButton = @$"<input type='button' onclick='ToggleButtonVisibility({idattribute})' value='Toggle {rootTag.Name}'>";
+            foreach (var child in childrenOfRoot)
             {
-                returnstring += CreateButtons(child);
+                children += CreateComponents(child);
             }
         }
 
         return Html.Raw($@"
-        <div> {returnstring} </div>");
+        <div> {rootelement} {toggleButton}
+            <div id='{idattribute}' class='taggroup' style='display: none;'> {children} </div> </div> ");
     }
 
     string CreateComponent(Models.Tag tag) //why does """ xyz """ rawstring not work ahhhhhhh
     {
-        return $@" {tag.Name} <input name='ChosenTags' type='checkbox' value='{tag.Name}'/> <br />";
+        return $@" {tag.Name} <input name='ChosenTags' type='checkbox' value='{tag.Name}'/>  <br />";
     } 
+}
+@section Scripts
+{
+    <script>
+        function ToggleButtonVisibility(taggroupname) {
+            $(taggroupname).toggle();
+        }
+    </script>
 }
 
 <form method="post">
@@ -45,7 +58,7 @@
     {
         if(tag.ParentId == null)
         {
-            @CreateButtons(tag)
+            @CreateComponents(tag)
         }
         
     }
