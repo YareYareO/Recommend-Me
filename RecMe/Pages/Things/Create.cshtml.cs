@@ -13,6 +13,9 @@ namespace RecMe.Pages.Things
     public class CreateModel : PageModel
     {
         private readonly RecMe.Data.RecMeContext _context;
+        public IList<Tag> Tag { get; set; } = default!;
+        [BindProperty]
+        public List<int>? ChosenTags { get; set; }
 
         public CreateModel(RecMe.Data.RecMeContext context)
         {
@@ -21,6 +24,7 @@ namespace RecMe.Pages.Things
 
         public IActionResult OnGet()
         {
+            Tag = _context.Tag.ToList();
             return Page();
         }
 
@@ -31,12 +35,18 @@ namespace RecMe.Pages.Things
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid || _context.Thing == null || Thing == null)
+          if (!ModelState.IsValid || _context.Thing == null || Thing == null || ChosenTags == null)
             {
                 return Page();
             }
 
             _context.Thing.Add(Thing);
+            await _context.SaveChangesAsync();
+
+            foreach (var TagId in ChosenTags)
+            {
+                _context.ThingHasTag.Add(new ThingHasTag(Thing.Id, TagId));
+            }
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

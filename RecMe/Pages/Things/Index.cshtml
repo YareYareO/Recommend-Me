@@ -41,7 +41,7 @@
 
     string CreateComponent(Models.Tag tag) //why does """ xyz """ rawstring not work ahhhhhhh
     {
-        return $@" {tag.Name} <input name='ChosenTags' type='checkbox' value='{tag.Name}'/>  <br />";
+        return $@" {tag.Name} <input name='ChosenTags' type='checkbox' value='{tag.Name}'/>";
     } 
 }
 @section Scripts
