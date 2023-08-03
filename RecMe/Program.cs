@@ -1,13 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RecMe.Models.SeedData;
 using RecMe.Data;
+using Microsoft.AspNetCore.Identity;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
+var connectionString = builder.Configuration.GetConnectionString("RecMeContext") ?? throw new InvalidOperationException("Connection string 'RecMeContext' not found.");
 builder.Services.AddDbContext<RecMeContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("RecMeContext") ?? throw new InvalidOperationException("Connection string 'RecMeContext' not found.")));
+    options.UseSqlServer(connectionString));
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<RecMeContext>();
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 

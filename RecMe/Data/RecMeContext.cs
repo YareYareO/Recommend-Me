@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RecMe.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace RecMe.Data
 {
-    public class RecMeContext : DbContext
+    public class RecMeContext : IdentityDbContext
     {
         public RecMeContext (DbContextOptions<RecMeContext> options)
             : base(options)
