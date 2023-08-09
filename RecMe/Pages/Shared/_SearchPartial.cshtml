@@ -1,0 +1,68 @@
+﻿@using Microsoft.AspNetCore.Html;
+@model List<Models.Tag>
+
+@{
+    IHtmlContent CreateComponentAndChildren(Models.Tag rootTag)
+    {
+        Models.Tag[] childrenList = ListChildren(rootTag);
+        string idattribute = "taggroup" + rootTag.Id.ToString();
+        string rootcomponentHtml = CreateSelectComponent(rootTag);
+        string toggleButtonHtml = "";
+        string childrenHtml = "";
+
+        if (childrenList.Length > 0)
+        {
+            toggleButtonHtml = CreateToggleButton(idattribute, rootTag.Name);
+            childrenHtml = GetRecursiveHTMLOfChildren(childrenList);
+        }
+
+        return Html.Raw($@"
+        <div> {rootcomponentHtml} {toggleButtonHtml}
+            <div id='{idattribute}' class='taggroup' style='display: none;'> {childrenHtml} </div> </div> ");
+    }
+
+    Models.Tag[] ListChildren(Models.Tag parentTag)
+    {
+        List<Models.Tag> children = new List<Models.Tag>();
+        foreach (var tag in Model) // might want to make a copy of model.tag and make it smaller in the next foreach loop so that it doesnt iterate through the whole thing over and over.
+        {
+            if (tag.ParentId == parentTag.Id)
+            {
+                children.Add(tag);
+            }
+        }
+        return children.ToArray();
+    }
+
+    string CreateSelectComponent(Models.Tag tag)
+    {
+        return $@" {tag.Name} <input name='ChosenTags' type='checkbox' value='{tag.Name}'/>";
+    }
+
+    string CreateToggleButton(string attribute, string tagname)
+    {
+        return @$"<input type='button' onclick='ToggleButtonVisibility({attribute})' value='Toggle {tagname}'>";
+    }
+
+    string GetRecursiveHTMLOfChildren(Models.Tag[] list)
+    {
+        string childrenHtml = "";
+        foreach (var child in list)
+        {
+            childrenHtml += CreateComponentAndChildren(child);
+        }
+        return childrenHtml;
+    }
+
+}
+
+<form method="post">
+    @foreach (var tag in Model)
+    {
+        if(tag.ParentId == null)
+        {
+            @CreateComponentAndChildren(tag);
+        }
+    }
+    <input type="submit" value="Start Searching" />
+</form>

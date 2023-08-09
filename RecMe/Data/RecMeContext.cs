@@ -20,5 +20,7 @@ namespace RecMe.Data
         public DbSet<RecMe.Models.ThingHasTag> ThingHasTag { get; set; } = default!;
 
         public DbSet<RecMe.Models.Tag> Tag { get; set; } = default!;
+
+        public DbSet<RecMe.Models.Upvote> Upvote { get; set; } = default!;
     }
 }
