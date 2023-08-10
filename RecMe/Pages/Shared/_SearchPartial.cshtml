@@ -2,23 +2,31 @@
 @model List<Models.Tag>
 
 @{
-    IHtmlContent CreateComponentAndChildren(Models.Tag rootTag)
+    string[] colors = { "#786fa6", "#63cdda", "#596275", "#ea8685", "#cf6a87", "#e77f67", "#778beb", "#f7d794", "#f3a683"};
+    IHtmlContent CreateComponentAndChildren(Models.Tag rootTag, string color)
     {
         Models.Tag[] childrenList = ListChildren(rootTag);
         string idattribute = "taggroup" + rootTag.Id.ToString();
-        string rootcomponentHtml = CreateSelectComponent(rootTag);
+        string rootcomponentHtml = CreateSelectComponent(rootTag, color);
         string toggleButtonHtml = "";
         string childrenHtml = "";
 
         if (childrenList.Length > 0)
         {
             toggleButtonHtml = CreateToggleButton(idattribute, rootTag.Name);
-            childrenHtml = GetRecursiveHTMLOfChildren(childrenList);
+            childrenHtml = GetRecursiveHTMLOfChildren(childrenList, color);
         }
 
-        return Html.Raw($@"
-        <div> {rootcomponentHtml} {toggleButtonHtml}
-            <div id='{idattribute}' class='taggroup' style='display: none;'> {childrenHtml} </div> </div> ");
+        var ret = $@"
+    <div class='searchcontainer'>
+    {rootcomponentHtml} 
+        {toggleButtonHtml}
+    <div id='{idattribute}' class='taggroup' style='display: none;'> 
+        {childrenHtml} 
+    </div>
+    </div>";
+
+        return Html.Raw(ret);
     }
 
     Models.Tag[] ListChildren(Models.Tag parentTag)
@@ -34,22 +42,37 @@
         return children.ToArray();
     }
 
-    string CreateSelectComponent(Models.Tag tag)
+    string CreateSelectComponent(Models.Tag tag, string color)
     {
-        return $@" {tag.Name} <input name='ChosenTags' type='checkbox' value='{tag.Name}'/>";
+        var news = $@"
+                        <div class='selectbutton' style='background-color: {color}'>
+                            <label class='form-check-label selectbuttonlabel'>
+                            <input class='form-check-input' name='ChosenTags' type='checkbox' value='{tag.Name}'>
+                            {tag.Name}</label>
+                        </div>
+                    ";
+
+        return news;
     }
 
     string CreateToggleButton(string attribute, string tagname)
     {
-        return @$"<input type='button' onclick='ToggleButtonVisibility({attribute})' value='Toggle {tagname}'>";
+        var button = $@"
+        <label class='togglebutton'>
+          <input type='checkbox' checked='checked' onchange='ToggleButtonVisibility({attribute})'>
+          <div class='line'></div>
+          <div class='line line-indicator'></div>
+        </label>";
+
+        return button;
     }
 
-    string GetRecursiveHTMLOfChildren(Models.Tag[] list)
+    string GetRecursiveHTMLOfChildren(Models.Tag[] list, string color)
     {
         string childrenHtml = "";
         foreach (var child in list)
         {
-            childrenHtml += CreateComponentAndChildren(child);
+            childrenHtml += CreateComponentAndChildren(child, color);
         }
         return childrenHtml;
     }
@@ -61,7 +84,8 @@
     {
         if(tag.ParentId == null)
         {
-            @CreateComponentAndChildren(tag);
+            string randomcolor = colors[new Random().Next(colors.Length)];
+            @CreateComponentAndChildren(tag, randomcolor);
         }
     }
     <input type="submit" value="Start Searching" />

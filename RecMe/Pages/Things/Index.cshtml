@@ -3,6 +3,11 @@
 @using RecMe.Pages.Shared;
 @model RecMe.Pages.Things.IndexModel
 
+@section SearchHead{
+    <link rel="stylesheet" href="~/css/SearchPartial/SearchContainerStyle.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/SearchPartial/SelectButtonStyle.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/SearchPartial/ToggleChildrenButtonStyle.css" asp-append-version="true" />}
+
 @{
     ViewData["Title"] = "Index";
 }
@@ -10,8 +15,7 @@
 <h1>Search for Things!</h1>
 
 <partial name="_SearchPartial" model="Model.Tag" />
-@section Scripts{
-    <script>
+@section SearchScript{<script>
         function ToggleButtonVisibility(taggroupname) {
             $(taggroupname).toggle();
         }
