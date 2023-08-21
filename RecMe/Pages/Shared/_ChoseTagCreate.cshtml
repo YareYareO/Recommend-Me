@@ -2,7 +2,7 @@
 @model List<Models.Tag>
 
 @{
-    string[] colors = { "#786fa6", "#63cdda", "#596275", "#ea8685", "#cf6a87", "#e77f67", "#778beb", "#f7d794", "#f3a683"};
+    string[] colors = { "#786fa6", "#63cdda", "#596275", "#ea8685", "#cf6a87", "#e77f67", "#778beb", "#f7d794", "#f3a683" };
     IHtmlContent CreateComponentAndChildren(Models.Tag rootTag, string color)
     {
         Models.Tag[] childrenList = ListChildren(rootTag);
@@ -19,10 +19,10 @@
 
         var ret = $@"
     <div class='searchcontainer'>
-    {rootcomponentHtml} 
+    {rootcomponentHtml}
         {toggleButtonHtml}
-    <div id='{idattribute}' class='taggroup' style='display: none;'> 
-        {childrenHtml} 
+    <div id='{idattribute}' class='taggroup' style='display: none;'>
+        {childrenHtml}
     </div>
     </div>";
 
@@ -47,8 +47,8 @@
         var news = $@"
                         <div class='selectbutton' style='background-color: {color}'>
                             <label class='form-check-label selectbuttonlabel'>
-                            <input class='form-check-input' name='ChosenTags' type='checkbox' value='{tag.Name}'>
-                            {tag.Name}</label>
+                            <input class='form-check-input' name='ChosenTags' type='checkbox' value='{tag.Id}'>
+            {tag.Name}</label>
                         </div>
                     ";
 
@@ -79,14 +79,12 @@
 
 }
 
-<form method="post">
-    @foreach (var tag in Model)
+@foreach (var tag in Model)
+{
+    if (tag.ParentId == 1)
     {
-        if(tag.ParentId == 1)
-        {
-            string randomcolor = colors[new Random().Next(colors.Length)];
-            @CreateComponentAndChildren(tag, randomcolor);
-        }
+        string randomcolor = colors[new Random().Next(colors.Length)];
+        @CreateComponentAndChildren(tag, randomcolor)
+        ;
     }
-    <input type="submit" class="btn btn-dark" value="Search" />
-</form>
+}

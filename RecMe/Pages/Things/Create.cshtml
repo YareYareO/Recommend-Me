@@ -2,45 +2,14 @@
 @using Microsoft.AspNetCore.Html;
 @model RecMe.Pages.Things.CreateModel
 
-@{
-    ViewData["Title"] = "Create";
+@section SearchHead{
+    <link rel="stylesheet" href="~/css/SearchPartial/SearchContainerStyle.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/SearchPartial/SelectButtonStyle.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/SearchPartial/ToggleChildrenButtonStyle.css" asp-append-version="true" />
 }
 
 @{
-    IHtmlContent CreateComponents(Models.Tag rootTag)
-    {
-        List<Models.Tag> childrenOfRoot = new List<Models.Tag>();
-        string idattribute = "taggroup" + rootTag.Id.ToString();
-        string rootelement = CreateComponent(rootTag);
-        string children = "";
-
-        foreach (var tag in Model.Tag) // might want to make a copy of model.tag and make it smaller in the next foreach loop so that it doesnt iterate through the whole thing over and over.
-        {
-            if (tag.ParentId == rootTag.Id)
-            {
-                childrenOfRoot.Add(tag);
-            }
-        }
-        string toggleButton = "";
-
-        if (childrenOfRoot.Count > 0)
-        {
-            toggleButton = @$"<input type='button' onclick='ToggleButtonVisibility({idattribute})' value='Toggle {rootTag.Name}'>";
-            foreach (var child in childrenOfRoot)
-            {
-                children += CreateComponents(child);
-            }
-        }
-
-        return Html.Raw($@"
-        <div> {rootelement} {toggleButton}
-            <div id='{idattribute}' class='taggroup' style='display: none;'> {children} </div> </div> ");
-    }
-
-    string CreateComponent(Models.Tag tag) //why does """ xyz """ rawstring not work ahhhhhhh
-    {
-        return $@" {tag.Name} <input name='ChosenTags' type='checkbox' value='{tag.Id}'/>"; //tag.id vs tag.name (index.cshtml)
-    }
+    ViewData["Title"] = "Create";
 }
 
 <h1>Create</h1>
@@ -61,14 +30,9 @@
                 <input asp-for="Thing.Description" class="form-control" />
                 <span asp-validation-for="Thing.Description" class="text-danger"></span>
             </div>
-            @foreach (var tag in Model.Tag)
-            {
-                if (tag.ParentId == null)
-                {
-                    @CreateComponents(tag)
-                }
+            
+            <partial name="_ChoseTagCreate" model="Model.Tag" />
 
-            }
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

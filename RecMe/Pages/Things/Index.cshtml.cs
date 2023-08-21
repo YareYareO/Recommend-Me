@@ -24,7 +24,7 @@ namespace RecMe.Pages.Things
         [BindProperty]
         public List<string>? ChosenTags { get; set; } //used to bind to ui checkboxes
 
-        private static string[]? ChosenTagsArray; //used to preserve chosen tags
+        private static string[]? ChosenTagsArray; //used to preserve chosen tags for the postupvote method, because unlike in onpostasync, the chosentags get lost in the upvote method idk
         public int PageSize { get; set; } = 10; // Number of items per page
         public int CurrentPage { get; set; } = 1; // Current page number
         public int TotalItems { get; set; } // Total number of items
@@ -35,15 +35,17 @@ namespace RecMe.Pages.Things
             _context = context;
             querier = new ThingQuerier(context);
         }
-        public async Task OnGetAsync(int currentPage = 1)
+        public async Task OnGetAsync(int currentPage = 1, List<string>? chosenTags = null)
         {
             Tag = await _context.Tag.ToListAsync();
+            ChosenTags = chosenTags;
+            ChosenTagsArray = ChosenTags.ToArray();
             CurrentPage = currentPage;
             int skipItems = (CurrentPage - 1) * PageSize;
 
-            if (ChosenTagsArray != null && ChosenTagsArray.Length > 0) //if the user searched something
+            if (ChosenTags != null && ChosenTags.Count > 0) //if the user searched something
             {
-                var things = await querier.GetThingsByTags(ChosenTagsArray).ToListAsync();
+                var things = await querier.GetThingsByTags(ChosenTags.ToArray()).ToListAsync();
                 TotalItems = things.Count;
                 
                 var thingsWithUpvoteCounts = things.Select(t => new
@@ -81,19 +83,13 @@ namespace RecMe.Pages.Things
         {
             if (!ModelState.IsValid)
             {
-                return Page();
+                return RedirectToPage("./Index", new { CurrentPage, ChosenTags });
             }
-
-            if (ChosenTags != null)
-            {
-                ChosenTagsArray = ChosenTags.ToArray();
-            }
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Index", new { CurrentPage, ChosenTags });
         }
 
         public async Task<IActionResult> OnPostUpvoteAsync(int thingId, int currentPage)
         {
-            Debug.WriteLine("----------------------------------------------------------");
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             // Check if the user has already upvoted the Thing
@@ -112,9 +108,9 @@ namespace RecMe.Pages.Things
                 _context.Upvote.Add(upvote);
                 await _context.SaveChangesAsync();
             }
-
+            
             // Redirect or return to the page displaying the Thing details
-            return RedirectToPage("./Index", new { CurrentPage = currentPage });
+            return RedirectToPage("./Index", new { CurrentPage = currentPage, ChosenTags = ChosenTagsArray.ToList()});
         }
 
         public async Task<int> GetTotalUpvotes(int thingId)
