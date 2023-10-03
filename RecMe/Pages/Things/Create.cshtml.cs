@@ -43,6 +43,7 @@ namespace RecMe.Pages.Things
                 return Page();
             }
             Thing.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Thing.CreatedAt = DateTime.UtcNow;
             _context.Thing.Add(Thing);
             await _context.SaveChangesAsync();
 
