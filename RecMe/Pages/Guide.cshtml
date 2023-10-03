@@ -1,0 +1,65 @@
+﻿@page
+@{
+    ViewData["Title"] = "Home page";
+}
+@section GuideHead{
+    <link rel="stylesheet" href="~/css/Guide/GuideStyle.css" asp-append-version="true" />
+}
+<main>
+    <h1>Guide to posting and using the app overall</h1>
+    <br/>
+    <h2>If you don't want to read all this.</h2>
+        <p>Do what makes sense.</p>
+    <h2>About the Application</h2> 
+    <ul>
+        <li>
+            The application is built on Things and Tags. Things are the knowledge shared, for example "The Art of War". Tags describe a Thing to make the Thing easily and precisely findable.
+            Therefore a Thing has multiple fitting Tags.
+        </li>
+        <li>
+            The Tags are fixed by the developer (me), you can not create your own tags, although you can always message me by using
+            the contact information on the bottom of the index page to make suggestions for the application.
+        </li>
+        <li>Searching for things only works via tags, there is no search bar.</li>
+        <li>
+            Things can be upvoted by registered Users. The Things found in the database will be ordered by their Upvote (descending)
+        </li>
+        <li>The Search supports multiple Tags, so you can be as specific as you want.</li>
+        <li>
+            A Thing is a Title and a short Description, this website is not wikipedia, it only serves as a guide to
+            spark the users interest and use the rest of the internet to go more into detail with the Thing they found.
+        </li>
+    </ul>
+    <h2>About Posting</h2>
+    <ul>
+        <li>Keep the Name and the Description of the Thing concise.</li>
+        <li>Not sure if the Thing you want to post deserves posting? Think if anybody would care about it in ten years.</li>
+        <li>Things do not have to be factual. Legends, mysteries, stories, tales, mythological events are very much welcome. Anything that might have been relevant at some point.
+            This does not include the story you just made up.</li>
+        <li>Obvious trolling or harmful content will be removed. Controversial or otherwise (on other platforms) unliked content is welcomed here, 
+            but no guides on how to cook meth, or stories about your mediocre birthday party.</li>
+        <li>Duplicate posts are to be avoided.</li>
+        <li>Historical information can be biased. Try to keep the description as neutral as possible, pretend that ai wrote it. Inspire the Users to look for more.</li>
+        <li>When it comes to Media, Things do not have to be as influential as the Bible or 1984. Most well acclaimed works of Media deserve to be remembered.</li>
+
+    </ul>
+    <h2>How to use Tags (Mind the picture below)</h2>
+    <ul>
+        <li>Tags are hierarchical. Everything is a thing, eversy peace of media is a thing, every motion picture is an instance of media. The application indicates the hiearchy visually.</li>
+        <li>always add the parent Tags.</li>
+        <li>There are two types of Tags: 1. Describing What a Thing is, and 2. describing further categories of the Thing. For example: (what is it) Book and (what type) Drama. 
+            Most Things should only have one Tag (+ the tags above it in the hierarchy) of type 1.</li>
+        <li>Type 1: Person, Media, Game, Place, Event, Gadget.</li>
+        <li>Type 2: Region, Time, Genre, Topic.</li>
+        <li>With Gadgets the idea is to find some nice things to buy for yourself or somebody else, like a bouncy ball for fun.</li>
+        <li>If not sure if a Tag fits a Thing, ask yourself if the Thing should be found when the user only searches for that particular Tag.</li>
+    
+    </ul>
+    <p>
+        Jackie Chan for instance is an Actor, therefore an Artist, therefore a Person, but he is also a Voice Actor, so let's add that.
+        Now, he is known for his movies, but Jackie Chan himself is not a Movie, Video, or Media. For Type 2 Tags, look at Genre. He would be associated with Comedy, Action, Crime.
+        So add those Tags, furthermore add the parent Tags, Fiction Genre and Genre. Next, everything has an place and time, where it was relevant, so lets add Region, Asia, Time, Contemporary Era,
+        21th Century.
+    </p>
+    <img src="~/images/Tag-Map.jpg" width="100%"/>
+</main>

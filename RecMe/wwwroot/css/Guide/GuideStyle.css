@@ -1,0 +1,15 @@
+﻿body {
+    background-color: white;
+}
+
+main {
+    font-family: 'PlayfairDisplay', sans-serif;
+    padding: 100px;
+}
+
+main li {
+    font-size: 20px;
+}
+main p{
+    font-size: 20px;
+}

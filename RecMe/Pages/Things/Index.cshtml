@@ -14,56 +14,69 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Search for Things!</h1>
-<a asp-page="Create">Create New</a>
 
-<partial name="_SearchPartial" model="Model.Tag" />
-@section SearchScript{<script>
-        function ToggleButtonVisibility(taggroupname) {
-            $(taggroupname).toggle();
-        }
-    </script>}
+<div class="">
+    <h1>Search for Things!</h1>
+    <div class="pure-u-lg-1-4 pure-u-md-1-8 pure-u-sm-1-24"></div>
+    <div class="pure-u-lg-1-2 pure-u-md-3-4 pure-u-sm-22-24">
+        <main role="main" class="pb-3">
+            <a asp-page="Create">Create New</a>
 
-<ul>
-    @foreach (var item in Model.Thing)
-    {
-        <li class="card-thing">
-            <div class="card-upvote-section">
-                <span class="card-upvote-number">@(await Model.GetTotalUpvotes(item.Id))</span>
+            <partial name="_SearchPartial" model="Model.Tag" />
+            @section SearchScript{
+                <script>
+                    function ToggleButtonVisibility(taggroupname) {
+                        $(taggroupname).toggle();
+                    }
+                </script>
+            }
 
-                @if (User.Identity != null && User.Identity.IsAuthenticated)
+            <ul>
+                @foreach (var item in Model.Thing)
                 {
-                    <form method="post" asp-page-handler="Upvote" asp-route-CurrentPage="@Model.CurrentPage">
-                        <input type="hidden" name="thingId" value="@item.Id" />
-                        <button type="submit" class="btn-outline-success">Up</button>
-                    </form>
+                    <li class="card-thing">
+                        <div class="card-upvote-section">
+                            <span class="card-upvote-number">@(await Model.GetTotalUpvotes(item.Id))</span>
+
+                            @if (User.Identity != null && User.Identity.IsAuthenticated)
+                            {
+                                <form method="post" asp-page-handler="Upvote" asp-route-CurrentPage="@Model.CurrentPage">
+                                    <input type="hidden" name="thingId" value="@item.Id" />
+                                    <button type="submit" class="btn-outline-success">Up</button>
+                                </form>
+                            }
+                        </div>
+
+                        <div class="card-text-section">
+                            <p class="card-text-title">@Html.DisplayFor(modelItem => item.Name)</p>
+                            <p class="card-text-text">@Html.DisplayFor(modelItem => item.Description)</p>
+                        </div>
+                    </li>
                 }
-            </div>
+            </ul>
+            <ul class="pagination" style="margin-top: 10px;">
 
-            <div class="card-text-section">
-                <p class="card-text-title">@Html.DisplayFor(modelItem => item.Name)</p>
-                <p class="card-text-text">@Html.DisplayFor(modelItem => item.Description)</p>
-            </div>
-        </li>
-    }
-</ul>
+                @if (Model.CurrentPage > 1)
+                {
+                    <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="1">First</a></li>
+                    <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="@(Model.CurrentPage - 1)">Previous</a></li>
+                }
 
-<ul class="pagination" style="margin-top: 10px;">
+                @for (int i = 1; i <= Math.Ceiling((double)Model.TotalItems / Model.PageSize); i++)
+                {
+                    <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="@i">@i</a></li>
+                }
 
-    @if (Model.CurrentPage > 1)
-    {
-        <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="1">First</a></li>
-        <li class="page-item"><a class="page-link"  asp-page="Index" asp-route-CurrentPage="@(Model.CurrentPage - 1)">Previous</a></li>
-    }
+                @if (Model.CurrentPage < Math.Ceiling((double)Model.TotalItems / Model.PageSize))
+                {
+                    <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="@(Model.CurrentPage + 1)">Next</a></li>
+                    <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="@Math.Ceiling((double)Model.TotalItems / Model.PageSize)">Last</a></li>
+                }
+            </ul>
+        </main>
+    </div>
+    <div class="pure-u-lg-1-4 pure-u-md-1-8 pure-u-sm-1-24"></div>
 
-    @for (int i = 1; i <= Math.Ceiling((double)Model.TotalItems / Model.PageSize); i++)
-    {
-        <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="@i">@i</a></li>
-    }
+</div>
 
-    @if (Model.CurrentPage < Math.Ceiling((double)Model.TotalItems / Model.PageSize))
-    {
-        <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="@(Model.CurrentPage + 1)">Next</a></li>
-        <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="@Math.Ceiling((double)Model.TotalItems / Model.PageSize)">Last</a></li>
-    }
-</ul>
+

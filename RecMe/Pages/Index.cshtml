@@ -4,7 +4,78 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@section IndexHead{
+    <link rel="stylesheet" href="~/css/Index/IndexStyle.css" asp-append-version="true" />
+}
+<main>
+    <div class="title-contents">
+
+        <h1>What do you know <br/> of the World?</h1>
+    </div>
+
+    <div class="description-contents">
+
+        <h2>The Internet holds all information, but most of it is burried.
+            <br>This here serves as a guide for the curious, and a venue for the knowledgable to preserve the valuable past.
+        </h2>
+
+        <div id="storycarousel" class="carousel slide">
+            <div class="carousel-inner">
+                <div class="carousel-item">
+                    <h3>
+                        The Antikythera Mechanism, a 2,000-year-old device discovered off the coast of Greece, is considered the world's first analog computer.
+                        It was used by ancient astronomers to predict celestial events, challenging the idea that complex technology was a recent
+                        development and highlighting the advanced knowledge of the ancient world.
+                    </h3>
+                </div>
+                <div class="carousel-item active">
+                    <h3>
+                        In a medieval Bohemian monastery, a desperate monk facing a walling sentence promised to create a book containing all human knowledge in a single night. 
+                        When he realized it was impossible, he made a pact with the Devil and included the Devil's image in the massive "Devil's Bible", 
+                        a legendary manuscript filled with texts and haunting illustrations.
+                    </h3> 
+                </div>
+                <div class="carousel-item">
+                    <h3>The Assassins, led by figures like Hassan-i Sabbah, were a Shiite Muslim sect during the 11th and 12th centuries. 
+                        They established their own state, used strategic assassinations, and left a lasting cultural legacy, inspiring modern works 
+                        like the novel 'Alamut' or the "Assassin's Creed" Franchise.</h3>
+                </div>
+                <div class="carousel-item">
+                    <h3>The Taiping Rebellion, a lesser-known but pivotal war in 19th-century China, was led by Hong Xiuquan, who believed he was Jesus Christ's brother. 
+                        This massive civil conflict resulted in millions of casualties and contributed to the weakening of the Qing Dynasty, 
+                        setting the stage for future political changes in China.</h3>
+                </div>
+                <div class="carousel-item">
+                    <h3>
+                        Heraclitus of Ephesus, a Greek philosopher around 500 BC, authored "On Nature." His key idea was that everything is in a constant state of change, 
+                        captured in the phrase "everything flows." His emphasis on impermanence and the unity of opposites had a lasting influence on philosophy, 
+                        including thinkers like Plato and Nietzsche.
+                    </h3>
+                </div>
+            
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#storycarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#storycarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="contribute-contents">
+
+        <h2>
+            Do you know something that could be interesting to someone in ten years? <br />I urge you to contribute. <br />You will have to create an account, though.
+        </h2>
+        <a class="guide-link" asp-page="/Guide">Guide to posting</a>
+    </div>
+</main>
+
+<script>
+    $(document).ready(function () {
+    $('#myCarousel').carousel('pause');
+    });
+</script>
