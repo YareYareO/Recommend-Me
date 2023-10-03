@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,7 @@ using RecMe.Models;
 
 namespace RecMe.Pages.Things
 {
+    [Authorize]
     public class CreateModel : PageModel
     {
         private readonly RecMe.Data.RecMeContext _context;
