@@ -1,11 +1,10 @@
-# RecMe
-Aren't you tired of it? You want to find out what laptop suits your needs best, which book from the victorian era to read next, or which historical event was the coolest, but when researching you are forced to scan a million different websites, each of them suggesting different things. Atleast i am sick of it, so here comes this project to save the day. I will build a platform, where you can look for and recommend to everyone else: anything, more anythings and as detailed as possible at that.
+# The great Guide
+The direction of this app has drastically changed since the start of this project. What used to be an app for finding the perfect consumer good for the user's needs has now become a collection of humanity's knowledge, history and stories. 
+Now, more than ever before, we are capable to grasp all knowledge kept by humanity by typing certain words into our constant electronic companions.
+Still it is difficult to know things: The most popular websites feed their users that which keeps them entertained the most. Only sometimes the all mighty algorithms decide to send new knowledge your way. 
+When one wants to explore all that is, and used to be, in the world, what does the approach look like? An empty search bar on google, and a person with no clue what to fill it with. 
+This project aims to satiate the curiousness in people. All kinds of knowledge, referenced in one place. Easy to find what you want, even easier to find more.
 
-To give an idea, you might search for the most recommended... : 
-1. laptop 15" for gaming under 700€ 
-2. funny rated r animated movies 
-3. hip hop album from the 90s
-4. movies about pirates starring johnny depp
-5. educational youtubers/content creators
+I am a Businessinformatics student from germany. I work alone on this project. I want to release this some day, so wish me good fortune.
 
 Project started 24.07.2023
