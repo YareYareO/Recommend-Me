@@ -25,6 +25,8 @@ namespace RecMe.Pages.Things
         public List<string>? ChosenTags { get; set; } //used to bind to ui checkboxes
 
         private static string[]? ChosenTagsArray; //used to preserve chosen tags for the postupvote method, because unlike in onpostasync, the chosentags get lost in the upvote method idk
+        [BindProperty]
+        public string SortBy { get; set; }
         public int PageSize { get; set; } = 10; // Number of items per page
         public int CurrentPage { get; set; } = 1; // Current page number
         public int TotalItems { get; set; } // Total number of items
@@ -35,57 +37,63 @@ namespace RecMe.Pages.Things
             _context = context;
             querier = new ThingQuerier(context);
         }
-        public async Task OnGetAsync(int currentPage = 1, List<string>? chosenTags = null)
+        public async Task OnGetAsync(int currentPage = 1, List<string>? chosenTags = null, string sortBy = "Upvotes")
         {
+            SortBy = sortBy;
             Tag = await _context.Tag.ToListAsync();
             ChosenTags = chosenTags;
-            ChosenTagsArray = ChosenTags.ToArray();
+            ChosenTagsArray = ChosenTags.ToArray(); //Just used to preserve chosentag info when upvoting, refreshing etc.
+
             CurrentPage = currentPage;
             int skipItems = (CurrentPage - 1) * PageSize;
 
-            if (ChosenTags != null && ChosenTags.Count > 0) //if the user searched something
+            
+            List<Thing> things;
+            if (ChosenTags != null && ChosenTags.Count > 0)
             {
-                var things = await querier.GetThingsByTags(ChosenTags.ToArray()).ToListAsync();
-                TotalItems = things.Count;
-                
-                var thingsWithUpvoteCounts = things.Select(t => new
-                {
-                    Thing = t,
-                    UpvoteCount = _context.Upvote.Count(u => u.ThingId == t.Id)
-                }).ToList();
-
-                Thing = thingsWithUpvoteCounts.OrderByDescending(t => t.UpvoteCount)
-                                                    .Select(t => t.Thing)
-                                                    .Skip(skipItems)
-                                                    .Take(PageSize)
-                                                    .ToList();
+                things = await querier.GetThingsByTags(ChosenTags.ToArray()).ToListAsync();
             }
             else
             {
-                var thingsWithUpvoteCounts = await _context.Thing
-                .Select(t => new
-                {
-                    Thing = t,
-                    UpvoteCount = _context.Upvote.Count(u => u.ThingId == t.Id)
-                })
-                .ToListAsync();
-                TotalItems = thingsWithUpvoteCounts.Count;
-
-                Thing = thingsWithUpvoteCounts.OrderByDescending(t => t.UpvoteCount)
-                                                    .Select(t => t.Thing)
-                                                    .Skip(skipItems)
-                                                    .Take(PageSize)
-                                                    .ToList();
+                things = await _context.Thing.ToListAsync();
             }
-            
+            TotalItems = things.Count;
+
+            SortAndSetThings(things, skipItems);
+        }
+
+        private void SortAndSetThings(List<Thing> things, int skipItems)
+        {
+            var thingsWithUpvoteCounts = things.Select(t => new
+            {
+                Thing = t,
+                UpvoteCount = _context.Upvote.Count(u => u.ThingId == t.Id)
+            }).ToList();
+
+            if (SortBy.Equals("New"))
+            {
+                Thing = thingsWithUpvoteCounts.OrderBy(t => t.Thing.CreatedAt)
+                                                .Select(t => t.Thing)
+                                                .Skip(skipItems)
+                                                .Take(PageSize)
+                                                .ToList();
+            }
+            else // Sorted by Upvotes or anything else
+            {
+                Thing = thingsWithUpvoteCounts.OrderByDescending(t => t.UpvoteCount)
+                                                .Select(t => t.Thing)
+                                                .Skip(skipItems)
+                                                .Take(PageSize)
+                                                .ToList();
+            }
         }
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToPage("./Index", new { CurrentPage, ChosenTags });
+                return RedirectToPage("./Index", new { CurrentPage, ChosenTags, SortBy });
             }
-            return RedirectToPage("./Index", new { CurrentPage, ChosenTags });
+            return RedirectToPage("./Index", new { CurrentPage, ChosenTags, SortBy });
         }
 
         public async Task<IActionResult> OnPostUpvoteAsync(int thingId, int currentPage)
@@ -110,7 +118,7 @@ namespace RecMe.Pages.Things
             }
             
             // Redirect or return to the page displaying the Thing details
-            return RedirectToPage("./Index", new { CurrentPage = currentPage, ChosenTags = ChosenTagsArray.ToList()});
+            return RedirectToPage("./Index", new { CurrentPage = currentPage, ChosenTags = ChosenTagsArray.ToList(), SortBy});
         }
 
         public async Task<int> GetTotalUpvotes(int thingId)

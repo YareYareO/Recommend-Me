@@ -22,7 +22,7 @@
         <main role="main" class="pb-3">
             <a asp-page="Create">Create New</a>
             
-            <partial name="_SearchPartial" model="Model.Tag" />
+            <partial name="_SearchPartial" model="Model" />
             @section SearchScript{
                 <script>
                     function ToggleButtonVisibility(taggroupname) {

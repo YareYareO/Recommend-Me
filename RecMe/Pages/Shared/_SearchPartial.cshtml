@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Html;
-@model List<Models.Tag>
+@model RecMe.Pages.Things.IndexModel
 
 @{
     string[] colors = { "#786fa6", "#63cdda", "#596275", "#ea8685", "#cf6a87", "#e77f67", "#778beb", "#f7d794", "#f3a683"};
@@ -32,7 +32,7 @@
     Models.Tag[] ListChildren(Models.Tag parentTag)
     {
         List<Models.Tag> children = new List<Models.Tag>();
-        foreach (var tag in Model) // might want to make a copy of model.tag and make it smaller in the next foreach loop so that it doesnt iterate through the whole thing over and over.
+        foreach (var tag in Model.Tag) // might want to make a copy of model.tag and make it smaller in the next foreach loop so that it doesnt iterate through the whole thing over and over.
         {
             if (tag.ParentId == parentTag.Id)
             {
@@ -45,12 +45,12 @@
     string CreateSelectComponent(Models.Tag tag, string color)
     {
         var news = $@"
-                        <div class='selectbutton' style='background-color: {color}'>
-                            <label class='form-check-label selectbuttonlabel'>
-                            <input class='form-check-input' name='ChosenTags' type='checkbox' value='{tag.Name}'>
-                            {tag.Name}</label>
-                        </div>
-                    ";
+                <div class='selectbutton' style='background-color: {color}'>
+                    <label class='form-check-label selectbuttonlabel'>
+                    <input class='form-check-input' name='ChosenTags' type='checkbox' value='{tag.Name}'>
+                    {tag.Name}</label>
+                </div>
+            ";
 
         return news;
     }
@@ -80,7 +80,7 @@
 }
 
 <form method="post">
-    @foreach (var tag in Model)
+    @foreach (var tag in Model.Tag)
     {
         if(tag.ParentId == 1)
         {
@@ -88,5 +88,8 @@
             @CreateComponentAndChildren(tag, randomcolor);
         }
     }
+    Sort by: Upvotes <input type="radio" asp-for="SortBy" id="SortBy" value="Upvotes" />
+    New             <input type="radio" asp-for="SortBy" id="SortBy" value="New" /><br />
+
     <input type="submit" class="pure-button" value="Search" />
 </form>
