@@ -72,7 +72,7 @@ namespace RecMe.Pages.Things
 
             if (SortBy.Equals("New"))
             {
-                Thing = thingsWithUpvoteCounts.OrderBy(t => t.Thing.CreatedAt)
+                Thing = thingsWithUpvoteCounts.OrderByDescending(t => t.Thing.CreatedAt)
                                                 .Select(t => t.Thing)
                                                 .Skip(skipItems)
                                                 .Take(PageSize)
