@@ -2,7 +2,7 @@
 @model List<Models.Tag>
 
 @{
-    string[] colors = { "#786fa6", "#63cdda", "#596275", "#ea8685", "#cf6a87", "#e77f67", "#778beb", "#f7d794", "#f3a683" };
+    string[] colors = { "#ffffff" };
     IHtmlContent CreateComponentAndChildren(Models.Tag rootTag, string color)
     {
         Models.Tag[] childrenList = ListChildren(rootTag);
@@ -45,7 +45,7 @@
     string CreateSelectComponent(Models.Tag tag, string color)
     {
         var news = $@"
-                        <div class='selectbutton' style='background-color: {color}'>
+                        <div class='selectbutton pure-button' style='background-color: {color}'>
                             <label class='form-check-label selectbuttonlabel'>
                             <input class='form-check-input' name='ChosenTags' type='checkbox' value='{tag.Id}'>
             {tag.Name}</label>
