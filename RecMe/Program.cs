@@ -3,8 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using RecMe.Models.SeedData;
 using RecMe.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using WebPWrecover.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +13,6 @@ builder.Services.AddDbContext<RecMeContext>(options =>
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<RecMeContext>();
 builder.Services.AddRazorPages();
-
-builder.Services.AddTransient<IEmailSender, EmailSender>();
-builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 
 var app = builder.Build();
 
