@@ -36,7 +36,7 @@
                 {
                     <li class="card-thing">
                         <div class="card-upvote-section">
-                            <span class="card-upvote-number">@(await Model.GetTotalUpvotes(item.Id))</span>
+                            <span class="card-upvote-number">@(await Model.upvoteQuerier.GetAllAsync(item.Id))</span>
 
                             @if (User.Identity != null && User.Identity.IsAuthenticated)
                             {
@@ -62,15 +62,15 @@
                     <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="@(Model.CurrentPage - 1)">Previous</a></li>
                 }
 
-                @for (int i = 1; i <= Math.Ceiling((double)Model.TotalItems / Model.PageSize); i++)
+                @for (int i = 1; i <= Math.Ceiling((double)Model.TotalItems / Model.ItemsPerPage); i++)
                 {
                     <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="@i">@i</a></li>
                 }
 
-                @if (Model.CurrentPage < Math.Ceiling((double)Model.TotalItems / Model.PageSize))
+                @if (Model.CurrentPage < Math.Ceiling((double)Model.TotalItems / Model.ItemsPerPage))
                 {
                     <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="@(Model.CurrentPage + 1)">Next</a></li>
-                    <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="@Math.Ceiling((double)Model.TotalItems / Model.PageSize)">Last</a></li>
+                    <li class="page-item"><a class="page-link" asp-page="Index" asp-route-CurrentPage="@Math.Ceiling((double)Model.TotalItems / Model.ItemsPerPage)">Last</a></li>
                 }
             </ul>
         </main>

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.View;
 using RecMe.Controllers.SearchThings;
 using RecMe.Data;
 using RecMe.Models;
@@ -19,6 +13,7 @@ namespace RecMe.Pages.Things
     {
         private readonly RecMeContext _context;
         private readonly ThingQuerier querier;
+        internal readonly UpvoteQuerier upvoteQuerier;
         public IList<Thing> Thing { get; set; } = default!;
         public IList<Tag> Tag { get; set; } = default!;
         [BindProperty]
@@ -27,15 +22,16 @@ namespace RecMe.Pages.Things
         private static string[]? ChosenTagsArray; //used to preserve chosen tags for the postupvote method, because unlike in onpostasync, the chosentags get lost in the upvote method idk
         [BindProperty]
         public string SortBy { get; set; }
-        public int PageSize { get; set; } = 10; // Number of items per page
-        public int CurrentPage { get; set; } = 1; // Current page number
-        public int TotalItems { get; set; } // Total number of items
+        public int ItemsPerPage { get; set; } = 10;
+        public int CurrentPage { get; set; } = 1;
+        public int TotalItems { get; set; }
 
 
         public IndexModel(RecMe.Data.RecMeContext context)
         {
             _context = context;
             querier = new ThingQuerier(context);
+            upvoteQuerier = new UpvoteQuerier(context);
         }
         public async Task OnGetAsync(int currentPage = 1, List<string>? chosenTags = null, string sortBy = "Upvotes")
         {
@@ -45,7 +41,7 @@ namespace RecMe.Pages.Things
             ChosenTagsArray = ChosenTags.ToArray(); //Just used to preserve chosentag info when upvoting, refreshing etc.
 
             CurrentPage = currentPage;
-            int skipItems = (CurrentPage - 1) * PageSize;
+            int skipItems = (CurrentPage - 1) * ItemsPerPage;
 
             
             List<Thing> things;
@@ -67,7 +63,7 @@ namespace RecMe.Pages.Things
             var thingsWithUpvoteCounts = things.Select(t => new
             {
                 Thing = t,
-                UpvoteCount = _context.Upvote.Count(u => u.ThingId == t.Id)
+                UpvoteCount = upvoteQuerier.GetAll(t.Id) //cant use the async version because of strange error
             }).ToList();
 
             if (SortBy.Equals("New"))
@@ -75,24 +71,22 @@ namespace RecMe.Pages.Things
                 Thing = thingsWithUpvoteCounts.OrderByDescending(t => t.Thing.CreatedAt)
                                                 .Select(t => t.Thing)
                                                 .Skip(skipItems)
-                                                .Take(PageSize)
+                                                .Take(ItemsPerPage)
                                                 .ToList();
+                return;
             }
-            else // Sorted by Upvotes or anything else
-            {
-                Thing = thingsWithUpvoteCounts.OrderByDescending(t => t.UpvoteCount)
+            Thing = thingsWithUpvoteCounts.OrderByDescending(t => t.UpvoteCount)
                                                 .Select(t => t.Thing)
                                                 .Skip(skipItems)
-                                                .Take(PageSize)
+                                                .Take(ItemsPerPage)
                                                 .ToList();
-            }
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return RedirectToPage("./Index", new { CurrentPage, ChosenTags, SortBy });
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return RedirectToPage("./Index", new { CurrentPage, ChosenTags, SortBy });
+            //}
             return RedirectToPage("./Index", new { CurrentPage, ChosenTags, SortBy });
         }
 
@@ -119,11 +113,6 @@ namespace RecMe.Pages.Things
             
             // Redirect or return to the page displaying the Thing details
             return RedirectToPage("./Index", new { CurrentPage = currentPage, ChosenTags = ChosenTagsArray.ToList(), SortBy});
-        }
-
-        public async Task<int> GetTotalUpvotes(int thingId)
-        {
-            return await _context.Upvote.CountAsync(u => u.ThingId == thingId);
         }
     }
 }
