@@ -26,6 +26,7 @@ public static class SeedData
             {
                 Debug.WriteLine("Tag not empty");
             }
+            //All Tags (warning: long)
             else
             {
                 context.Tag.AddRange(
