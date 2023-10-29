@@ -22,7 +22,7 @@ namespace RecMe.Pages.Things
 
         private static string[]? ChosenTagsArray; //used to preserve chosen tags for the postupvote method, because unlike in onpostasync, the chosentags get lost in the upvote method idk
         [BindProperty]
-        public string SortBy { get; set; }
+        public string? SortBy { get; set; }
         public int ItemsPerPage { get; set; } = 20;
         public int CurrentPage { get; set; } = 1;
         public int TotalItems { get; set; }
@@ -49,7 +49,7 @@ namespace RecMe.Pages.Things
 
             TotalItems = Thing.Count;
         }
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPost()
         {
             if (ModelState.IsValid)
             {
@@ -71,7 +71,7 @@ namespace RecMe.Pages.Things
                 // User has not upvoted this Thing, create a new Upvote record
                 var upvote = new Upvote
                 {
-                    UserId = userId,
+                    UserId = userId ?? "unknownForSomeReason",
                     ThingId = thingId
                 };
 
@@ -80,7 +80,7 @@ namespace RecMe.Pages.Things
             }
             
             // Redirect or return to the page displaying the Thing details
-            return RedirectToPage("./Index", new { CurrentPage = currentPage, ChosenTags = ChosenTagsArray.ToList(), SortBy});
+            return RedirectToPage("./Index", new { CurrentPage = currentPage, ChosenTags = ChosenTagsArray?.ToList(), SortBy});
         }
     }
 }
