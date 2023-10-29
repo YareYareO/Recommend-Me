@@ -11,10 +11,6 @@ namespace RecMe.Controllers.SearchThings
         {
             _context = context;
         }
-        public IQueryable<Tag> GetAllTags()
-        {
-            return _context.Tag;
-        }
         public IQueryable<Thing> GetAllThings()
         {
             return _context.Thing;

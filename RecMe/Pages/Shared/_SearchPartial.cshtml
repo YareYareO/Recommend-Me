@@ -32,7 +32,7 @@
     Models.Tag[] ListChildren(Models.Tag parentTag)
     {
         List<Models.Tag> children = new List<Models.Tag>();
-        foreach (var tag in Model.Tag) // might want to make a copy of model.tag and make it smaller in the next foreach loop so that it doesnt iterate through the whole thing over and over.
+        foreach (var tag in Model.Tag)
         {
             if (tag.ParentId == parentTag.Id)
             {

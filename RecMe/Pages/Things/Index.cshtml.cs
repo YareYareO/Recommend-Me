@@ -13,8 +13,9 @@ namespace RecMe.Pages.Things
     public class IndexModel : PageModel
     {
         private readonly RecMeContext _context;
-        private readonly ThingQuerier thingQuerier;
+        internal readonly ThingQuerier thingQuerier;
         internal readonly UpvoteQuerier upvoteQuerier;
+        internal readonly TagQuerier tagQuerier;
         public IList<Thing> Thing { get; set; } = default!;
         public IList<Tag> Tag { get; set; } = default!;
         [BindProperty]
@@ -33,11 +34,12 @@ namespace RecMe.Pages.Things
             _context = context;
             thingQuerier = new ThingQuerier(context);
             upvoteQuerier = new UpvoteQuerier(context);
+            tagQuerier = new TagQuerier(context);
         }
         public async Task OnGetAsync(int currentPage = 1, List<string>? chosenTags = null, string sortBy = "Upvotes")
         {
             SortBy = sortBy;
-            Tag = await _context.Tag.ToListAsync();
+            Tag = await tagQuerier.GetAll().ToListAsync();
 
             ChosenTags = chosenTags ?? new List<string>();
             ChosenTagsArray = ChosenTags.ToArray(); //Just used to preserve chosentag info when upvoting, refreshing etc.
