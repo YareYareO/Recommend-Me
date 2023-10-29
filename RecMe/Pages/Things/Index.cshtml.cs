@@ -1,4 +1,5 @@
 ﻿
+using System.Diagnostics;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,7 +13,7 @@ namespace RecMe.Pages.Things
     public class IndexModel : PageModel
     {
         private readonly RecMeContext _context;
-        private readonly ThingQuerier querier;
+        private readonly ThingQuerier thingQuerier;
         internal readonly UpvoteQuerier upvoteQuerier;
         public IList<Thing> Thing { get; set; } = default!;
         public IList<Tag> Tag { get; set; } = default!;
@@ -22,7 +23,7 @@ namespace RecMe.Pages.Things
         private static string[]? ChosenTagsArray; //used to preserve chosen tags for the postupvote method, because unlike in onpostasync, the chosentags get lost in the upvote method idk
         [BindProperty]
         public string SortBy { get; set; }
-        public int ItemsPerPage { get; set; } = 10;
+        public int ItemsPerPage { get; set; } = 20;
         public int CurrentPage { get; set; } = 1;
         public int TotalItems { get; set; }
 
@@ -30,64 +31,31 @@ namespace RecMe.Pages.Things
         public IndexModel(RecMe.Data.RecMeContext context)
         {
             _context = context;
-            querier = new ThingQuerier(context);
+            thingQuerier = new ThingQuerier(context);
             upvoteQuerier = new UpvoteQuerier(context);
         }
         public async Task OnGetAsync(int currentPage = 1, List<string>? chosenTags = null, string sortBy = "Upvotes")
         {
             SortBy = sortBy;
             Tag = await _context.Tag.ToListAsync();
-            ChosenTags = chosenTags;
+
+            ChosenTags = chosenTags ?? new List<string>();
             ChosenTagsArray = ChosenTags.ToArray(); //Just used to preserve chosentag info when upvoting, refreshing etc.
-
             CurrentPage = currentPage;
-            int skipItems = (CurrentPage - 1) * ItemsPerPage;
 
-            
-            List<Thing> things;
-            if (ChosenTags != null && ChosenTags.Count > 0)
-            {
-                things = await querier.GetThingsByTags(ChosenTags.ToArray()).ToListAsync();
-            }
-            else
-            {
-                things = await _context.Thing.ToListAsync();
-            }
-            TotalItems = things.Count;
+            Thing = ChosenTags.Count > 0
+                ? await thingQuerier.GetSortedThings(ChosenTags, currentPage, sortBy).ToListAsync()
+                : new List<Thing>();
 
-            SortAndSetThings(things, skipItems);
-        }
-
-        private void SortAndSetThings(List<Thing> things, int skipItems)
-        {
-            var thingsWithUpvoteCounts = things.Select(t => new
-            {
-                Thing = t,
-                UpvoteCount = upvoteQuerier.GetAll(t.Id) //cant use the async version because of strange error
-            }).ToList();
-
-            if (SortBy.Equals("New"))
-            {
-                Thing = thingsWithUpvoteCounts.OrderByDescending(t => t.Thing.CreatedAt)
-                                                .Select(t => t.Thing)
-                                                .Skip(skipItems)
-                                                .Take(ItemsPerPage)
-                                                .ToList();
-                return;
-            }
-            Thing = thingsWithUpvoteCounts.OrderByDescending(t => t.UpvoteCount)
-                                                .Select(t => t.Thing)
-                                                .Skip(skipItems)
-                                                .Take(ItemsPerPage)
-                                                .ToList();
+            TotalItems = Thing.Count;
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return RedirectToPage("./Index", new { CurrentPage, ChosenTags, SortBy });
-            //}
-            return RedirectToPage("./Index", new { CurrentPage, ChosenTags, SortBy });
+            if (ModelState.IsValid)
+            {
+                return RedirectToPage("./Index", new { CurrentPage, ChosenTags, SortBy });
+            }
+            return RedirectToPage("./Index");
         }
 
         public async Task<IActionResult> OnPostUpvoteAsync(int thingId, int currentPage)
