@@ -20,7 +20,8 @@ namespace RecMe.Pages.Things
         [BindProperty]
         public List<string>? ChosenTags { get; set; } //used to bind to ui checkboxes
 
-        private static List<string>? ChosenTagsArray; //used to preserve chosen tags for the postupvote method, because unlike in onpostasync, the chosentags get lost in the upvote method idk
+        private static List<string>? ChosenTagsStatic; //used to preserve chosen tags for the postupvote method, because unlike in onpostasync, the chosentags get lost in the upvote method idk
+        private static string? SortByStatic;
         [BindProperty]
         public string? SortBy { get; set; }
         public int ItemsPerPage { get; set; } = 20;
@@ -37,10 +38,11 @@ namespace RecMe.Pages.Things
         public async Task OnGetAsync(int currentPage = 1, List<string>? chosenTags = null, string sortBy = "Upvotes")
         {
             SortBy = sortBy;
+            SortByStatic = SortBy;
             Tag = await tagQuerier.GetAll().ToListAsync();
 
             ChosenTags = chosenTags ?? new List<string>();
-            ChosenTagsArray = ChosenTags; //Just used to preserve chosentag info when upvoting, refreshing etc.
+            ChosenTagsStatic = ChosenTags; //Just used to preserve chosentag info when upvoting, refreshing etc.
             CurrentPage = currentPage;
 
             Thing = ChosenTags.Count > 0
@@ -81,7 +83,7 @@ namespace RecMe.Pages.Things
             }
             
             // Redirect or return to the page displaying the Thing details
-            return RedirectToPage("./Index", new { CurrentPage = currentPage, ChosenTags = ChosenTagsArray, SortBy});
+            return RedirectToPage("./Index", new { CurrentPage = currentPage, ChosenTags = ChosenTagsStatic, SortBy = SortByStatic});
         }
     }
 }
