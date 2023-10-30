@@ -36,7 +36,7 @@
                 {
                     <li class="card-thing">
                         <div class="card-upvote-section">
-                            <span class="card-upvote-number">@(await Model.upvoteQuerier.GetAllAsync(item.Id))</span>
+                            <span class="card-upvote-number">@(await Model.upvoteQuerier.GetAsync(item.Id))</span>
 
                             @if (User.Identity != null && User.Identity.IsAuthenticated)
                             {

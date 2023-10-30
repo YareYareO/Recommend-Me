@@ -12,7 +12,6 @@ namespace RecMe.Pages.Things
 {
     public class IndexModel : PageModel
     {
-        private readonly RecMeContext _context;
         internal readonly ThingQuerier thingQuerier;
         internal readonly UpvoteQuerier upvoteQuerier;
         internal readonly TagQuerier tagQuerier;
@@ -21,7 +20,7 @@ namespace RecMe.Pages.Things
         [BindProperty]
         public List<string>? ChosenTags { get; set; } //used to bind to ui checkboxes
 
-        private static string[]? ChosenTagsArray; //used to preserve chosen tags for the postupvote method, because unlike in onpostasync, the chosentags get lost in the upvote method idk
+        private static List<string>? ChosenTagsArray; //used to preserve chosen tags for the postupvote method, because unlike in onpostasync, the chosentags get lost in the upvote method idk
         [BindProperty]
         public string? SortBy { get; set; }
         public int ItemsPerPage { get; set; } = 20;
@@ -31,7 +30,6 @@ namespace RecMe.Pages.Things
 
         public IndexModel(RecMe.Data.RecMeContext context)
         {
-            _context = context;
             thingQuerier = new ThingQuerier(context);
             upvoteQuerier = new UpvoteQuerier(context);
             tagQuerier = new TagQuerier(context);
@@ -42,7 +40,7 @@ namespace RecMe.Pages.Things
             Tag = await tagQuerier.GetAll().ToListAsync();
 
             ChosenTags = chosenTags ?? new List<string>();
-            ChosenTagsArray = ChosenTags.ToArray(); //Just used to preserve chosentag info when upvoting, refreshing etc.
+            ChosenTagsArray = ChosenTags; //Just used to preserve chosentag info when upvoting, refreshing etc.
             CurrentPage = currentPage;
 
             Thing = ChosenTags.Count > 0
@@ -65,7 +63,7 @@ namespace RecMe.Pages.Things
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             // Check if the user has already upvoted the Thing
-            var existingUpvote = await _context.Upvote
+            var existingUpvote = await upvoteQuerier.GetAll()
                 .FirstOrDefaultAsync(u => u.UserId == userId && u.ThingId == thingId);
 
             if (existingUpvote == null)
@@ -77,12 +75,13 @@ namespace RecMe.Pages.Things
                     ThingId = thingId
                 };
 
-                _context.Upvote.Add(upvote);
-                await _context.SaveChangesAsync();
+                await upvoteQuerier.AddOne(upvote);
+                await upvoteQuerier.SaveChanges();
+
             }
             
             // Redirect or return to the page displaying the Thing details
-            return RedirectToPage("./Index", new { CurrentPage = currentPage, ChosenTags = ChosenTagsArray?.ToList(), SortBy});
+            return RedirectToPage("./Index", new { CurrentPage = currentPage, ChosenTags = ChosenTagsArray, SortBy});
         }
     }
 }

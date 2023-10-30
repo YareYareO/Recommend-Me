@@ -80,14 +80,12 @@
 }
 
 <form method="post">
-    @foreach (var tag in Model.Tag)
-    {
-        if(tag.ParentId == 1)
-        {
-            string randomcolor = colors[new Random().Next(colors.Length)];
-            @CreateComponentAndChildren(tag, randomcolor);
-        }
+    @{
+        Models.Tag rootTag = Model.Tag[0];
+        string randomcolor = colors[new Random().Next(colors.Length)];
+        @CreateComponentAndChildren(rootTag, randomcolor);
     }
+
     Sort by: Upvotes <input type="radio" asp-for="SortBy" id="SortBy" value="Upvotes" />
     New             <input type="radio" asp-for="SortBy" id="SortBy" value="New" /><br />
 

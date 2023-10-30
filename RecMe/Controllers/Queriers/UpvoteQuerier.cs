@@ -1,6 +1,7 @@
 ﻿using RecMe.Data;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using RecMe.Models;
 
 namespace RecMe.Controllers.SearchThings
 {
@@ -12,12 +13,25 @@ namespace RecMe.Controllers.SearchThings
         { 
             _context = context;
         }
-        public int GetAll(int thingId)
+        public int Get(int thingId)
         {
             return _context.Upvote.Count(u => u.ThingId == thingId);
         }
+        public IQueryable<Upvote> GetAll()
+        {
+            return _context.Upvote;
+        }
+        public async Task AddOne(Upvote upvote)
+        {
+            await _context.Upvote.AddAsync(upvote);
+            
+        }
+        public async Task SaveChanges()
+        {
+            await _context.SaveChangesAsync();
+        }
 
-        public async Task<int> GetAllAsync(int thingId)
+        public async Task<int> GetAsync(int thingId)
         {
             return await _context.Upvote.CountAsync(u => u.ThingId == thingId);
         }
