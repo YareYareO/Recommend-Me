@@ -2,7 +2,7 @@
 
 A website to find and contribute references to historical, or otherwise interesting information.
 
-The site lets you search for information based on tags. Tags include everything from Things like People, Pieces of media, Events, Places to descriptions like Fictional, Time it was created, Genre. In total there are 100 Tags to choose from, combinable as wished during search, and sorted in a hierarchy.
+The site lets you search for information based on tags. Tags include everything from Things like People, Pieces of media, Events, Places to descriptions like Fictional, Time it was created, Genre. In total there are 100 Tags to choose from, combinable as wished during search, and sorted in a hierarchy. A diagram of all Tags is in the root folder "Tag-Map.jpg"
 
 Current 'production' https://recme.azurewebsites.net/
 Obviously, i do not have a dedicated domain. App and SQL Server hosted by Azure.
